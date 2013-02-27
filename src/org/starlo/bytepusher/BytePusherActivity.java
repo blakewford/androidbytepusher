@@ -62,7 +62,18 @@ public class BytePusherActivity extends Activity implements OnClickListener {
 		}
 		
 		// startup vm
-		setFrequency(CLOCK_FREQUENCY);			
+		setFrequency(CLOCK_FREQUENCY);
+		
+		final int[] keyIds = 
+			new int[]{
+				R.id.key_0, R.id.key_1, R.id.key_2, R.id.key_3,
+				R.id.key_4, R.id.key_5, R.id.key_6, R.id.key_7,
+				R.id.key_8, R.id.key_9, R.id.key_A, R.id.key_B,
+				R.id.key_C, R.id.key_D, R.id.key_E, R.id.key_F
+		};
+		
+		for(int id: keyIds)
+			findViewById(id).setOnClickListener(mIODriver);
 	}
 	
 	private void loadRom( String rom ) {

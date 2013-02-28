@@ -7,13 +7,15 @@ import android.graphics.Color;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.TextView;
 
-public class AndroidBytePusherIODriverImpl implements BytePusherIODriver, OnClickListener {
+public class AndroidBytePusherIODriverImpl implements BytePusherIODriver, OnTouchListener {
 
 	private static final int SCREEN_DIMENSION = 256;
 	private SurfaceHolder mHolder;
@@ -43,8 +45,6 @@ public class AndroidBytePusherIODriverImpl implements BytePusherIODriver, OnClic
 
 	@Override
 	public void renderDisplayFrame(char[] data) {
-		//Clear key state, we should have already read this
-		mKeyState = 0x0000;
 		int[] colors = new int[data.length];
 		int i = 0;
 		for (int y=0; y < 256; y++) {
@@ -73,7 +73,16 @@ public class AndroidBytePusherIODriverImpl implements BytePusherIODriver, OnClic
 	}
 
 	@Override
-	public void onClick(View view) {
-		mKeyState = (short)(mKeyState|(1<<Integer.valueOf(((TextView)view).getText().toString(), 16)));	
+	public boolean onTouch(View view, MotionEvent event) {
+		int keyFlag = (1<<Integer.valueOf(((TextView)view).getText().toString(), 16));
+		switch(event.getAction()){
+			case MotionEvent.ACTION_DOWN:
+				mKeyState = (short)(mKeyState|keyFlag);	
+				break;
+			case MotionEvent.ACTION_UP:
+				mKeyState = (short)(mKeyState^keyFlag);
+				break;
+		}
+		return false;
 	}
 }

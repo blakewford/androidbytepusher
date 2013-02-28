@@ -83,7 +83,7 @@ public class BytePusherActivity extends Activity implements OnClickListener {
 		};
 		
 		for(int id: keyIds)
-			findViewById(id).setOnClickListener(mIODriver);
+			findViewById(id).setOnTouchListener(mIODriver);
 	}
 	
 	private void loadRom( String rom ) {

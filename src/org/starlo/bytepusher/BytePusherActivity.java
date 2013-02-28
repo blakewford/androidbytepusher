@@ -12,7 +12,9 @@ import android.os.Bundle;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 import android.app.Activity;
+import android.content.res.AssetManager;
 
 public class BytePusherActivity extends Activity implements OnClickListener {
 
@@ -26,11 +28,13 @@ public class BytePusherActivity extends Activity implements OnClickListener {
 	private ClockTask mClockTask;
 	private FrameRate mFrameRate = new FrameRate();
 	private int mCurrentRomIndex = 0;
+	private AssetManager mAssetManager;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.display_layout);
+		mAssetManager = getAssets();
 		setUpVm();
 	}
 	
@@ -44,7 +48,13 @@ public class BytePusherActivity extends Activity implements OnClickListener {
 	public void onClick(View arg0) {
 		String[] roms = getRoms();
 		mCurrentRomIndex = ++mCurrentRomIndex < roms.length-1 ? mCurrentRomIndex: 0;
-		loadRom(roms[mCurrentRomIndex]);
+		try{
+			System.gc();
+			loadRom(roms[mCurrentRomIndex]);
+		}catch (OutOfMemoryError e){
+			mCurrentRomIndex = mCurrentRomIndex > 0 ? mCurrentRomIndex--: roms.length-1;
+			Toast.makeText(this, R.string.out_of_memory, Toast.LENGTH_SHORT).show();
+		}
 	}
 	
 	//Mostly code from the desktop version
@@ -78,7 +88,7 @@ public class BytePusherActivity extends Activity implements OnClickListener {
 	
 	private void loadRom( String rom ) {
 		try {
-			InputStream fis = getAssets().open( "roms/"+rom );
+			InputStream fis = mAssetManager.open( "roms/"+rom );
 			mVirtualMachine.load( fis );
 			fis.close();
 		}
@@ -97,7 +107,7 @@ public class BytePusherActivity extends Activity implements OnClickListener {
 	
 	private String [] getRoms() {
 		try {
-			return getAssets().list(ROMS_ASSETS_FOLDER);
+			return mAssetManager.list(ROMS_ASSETS_FOLDER);
 		} catch (IOException e) {
 			return null;
 		}

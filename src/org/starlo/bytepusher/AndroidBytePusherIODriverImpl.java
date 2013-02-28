@@ -60,10 +60,8 @@ public class AndroidBytePusherIODriverImpl implements BytePusherIODriver, OnClic
 				i++;
 			}
 		}
-		if(mScaledBitmap != null){
+		if(mScaledBitmap != null)
 			mScaledBitmap.recycle();
-			System.gc();
-		}
 		Canvas canvas = mHolder.lockCanvas();
 		if(canvas != null){
 			canvas.drawColor(Color.BLACK);

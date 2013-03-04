@@ -45,18 +45,10 @@ public class AndroidBytePusherIODriverImpl implements BytePusherIODriver, OnTouc
 	@Override
 	public void renderDisplayFrame(char[] data) {
 		int[] colors = new int[data.length];
-		int i = 0;
-		for (int y=0; y < 256; y++) {
-			for (int x=0; x < 256; x++) 
-			{
-				int datum = data[i];
-				if ( datum < 216 ) {
-					int blue = datum % 6;
-					int green = ((datum - blue) / 6) % 6;
-					int red = ((datum - blue - (6 * green)) / 36) % 6;
-					colors[i] = 0xFF << 24|red*0x33 << 16|green*0x33 << 8|blue*0x33;
-				}
-				i++;
+		for (int y=0; y < SCREEN_DIMENSION; y++) {
+			for (int x=0; x < SCREEN_DIMENSION; x++) {
+				int color = BytePusherColorResolver.getRGBAtCoordinate(x, y, data);
+				colors[(y*SCREEN_DIMENSION)+x] = 0xFF << 24|color;
 			}
 		}
 		if(mScaledBitmap != null)
